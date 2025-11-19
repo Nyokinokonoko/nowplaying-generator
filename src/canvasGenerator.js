@@ -67,20 +67,18 @@ async function generateTracklistImage(config) {
   ctx.fillRect(0, 0, width, HEADER_HEIGHT);
 
   // Header Title
+  const textBaselineY = HEADER_HEIGHT - 20; // Shared bottom anchor for Title & Subtitle
+
   ctx.fillStyle = "#FFFFFF";
   ctx.font = 'bold 80px "Noto Sans JP"';
-  ctx.textBaseline = "middle";
-  ctx.fillText(config.imageTitle, 50, HEADER_HEIGHT / 2);
+  ctx.textBaseline = "bottom"; // Align text by its bottom edge
+  ctx.fillText(config.imageTitle, 50, textBaselineY);
   const titleWidth = ctx.measureText(config.imageTitle).width;
 
   // Header Subtitle
   ctx.fillStyle = "#DDDDDD";
   ctx.font = 'bold 24px "Noto Sans JP"';
-  ctx.fillText(
-    config.imageSubtitle,
-    50 + titleWidth + 30,
-    HEADER_HEIGHT / 2 + 5
-  );
+  ctx.fillText(config.imageSubtitle, 50 + titleWidth + 30, textBaselineY);
 
   // 4. Cover Art (Straight)
   try {
