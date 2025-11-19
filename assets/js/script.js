@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     imageSubtitle: "Subtitle text here",
     coverArt: null,
     backdrop: null,
+    colorBackground: "#1a1a1a",
+    colorOverlay: "#000000",
+    colorTitle: "#FFFFFF",
+    colorSubtitle: "#DDDDDD",
+    colorSongText: "#FFFFFF",
+    colorComment: "#CCCCCC",
     songs: [
       {
         title: "Song Title",
@@ -27,6 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const songListEl = document.getElementById("songList");
   const addSongBtn = document.getElementById("addSongBtn");
   const downloadBtn = document.getElementById("downloadBtn");
+
+  const colorInputs = {
+    colorBackground: document.getElementById("colorBackground"),
+    colorOverlay: document.getElementById("colorOverlay"),
+    colorTitle: document.getElementById("colorTitle"),
+    colorSubtitle: document.getElementById("colorSubtitle"),
+    colorSongText: document.getElementById("colorSongText"),
+    colorComment: document.getElementById("colorComment"),
+  };
 
   // --- Initialization ---
   function init() {
@@ -61,6 +76,15 @@ document.addEventListener("DOMContentLoaded", () => {
       config.imageSubtitle = e.target.value;
       drawCanvas();
     });
+
+    // Color Inputs
+    Object.keys(colorInputs).forEach((key) => {
+      colorInputs[key].addEventListener("input", (e) => {
+        config[key] = e.target.value;
+        drawCanvas();
+      });
+    });
+
     addSongBtn.addEventListener("click", () => {
       addSongToDOM();
       updateSongsFromDOM();
