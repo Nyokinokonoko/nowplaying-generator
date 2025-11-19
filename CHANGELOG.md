@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0](https://github.com/Nyokinokonoko/nowplaying-generator/compare/v1.0.0...v1.1.0) (2025-11-19)
+
+
+### Features
+
+* Add color input fields to UI ([632c399](https://github.com/Nyokinokonoko/nowplaying-generator/commit/632c3995c272dc2895d3168ab95e718c14b9a08f))
+* Apply dynamic colors to canvas elements ([9c9d846](https://github.com/Nyokinokonoko/nowplaying-generator/commit/9c9d846662a0d6512b693bc9c7f9fc52ffdbc212))
+* Implement hex to RGB conversion utility ([c20f909](https://github.com/Nyokinokonoko/nowplaying-generator/commit/c20f90927a96dce5b1514fa393faf6c011d7b618))
+* Introduce configurable color options in JS ([edc741f](https://github.com/Nyokinokonoko/nowplaying-generator/commit/edc741fa9f026e990d68f7e8f013d179ea58a21f))
+* Introduce dynamic color customization ([a0e6519](https://github.com/Nyokinokonoko/nowplaying-generator/commit/a0e6519e620fe8449dda276eb6809be39e937768))
+
 ## 1.0.0 (2025-11-19)
 
 

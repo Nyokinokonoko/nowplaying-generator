@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     imageSubtitle: "Subtitle text here",
     coverArt: null,
     backdrop: null,
+    colorBackground: "#1a1a1a",
+    colorOverlay: "#000000",
+    colorTitle: "#FFFFFF",
+    colorSubtitle: "#DDDDDD",
+    colorSongText: "#FFFFFF",
+    colorComment: "#CCCCCC",
     songs: [
       {
         title: "Song Title",
@@ -27,6 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const songListEl = document.getElementById("songList");
   const addSongBtn = document.getElementById("addSongBtn");
   const downloadBtn = document.getElementById("downloadBtn");
+
+  const colorInputs = {
+    colorBackground: document.getElementById("colorBackground"),
+    colorOverlay: document.getElementById("colorOverlay"),
+    colorTitle: document.getElementById("colorTitle"),
+    colorSubtitle: document.getElementById("colorSubtitle"),
+    colorSongText: document.getElementById("colorSongText"),
+    colorComment: document.getElementById("colorComment"),
+  };
 
   // --- Initialization ---
   function init() {
@@ -61,6 +76,15 @@ document.addEventListener("DOMContentLoaded", () => {
       config.imageSubtitle = e.target.value;
       drawCanvas();
     });
+
+    // Color Inputs
+    Object.keys(colorInputs).forEach((key) => {
+      colorInputs[key].addEventListener("input", (e) => {
+        config[key] = e.target.value;
+        drawCanvas();
+      });
+    });
+
     addSongBtn.addEventListener("click", () => {
       addSongToDOM();
       updateSongsFromDOM();
@@ -102,15 +126,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (config.backdrop) {
       drawImageCover(ctx, config.backdrop, width, height);
     } else {
-      ctx.fillStyle = "#1a1a1a";
+      ctx.fillStyle = config.colorBackground;
       ctx.fillRect(0, 0, width, height);
     }
 
-    // 2. Dark Gradient Overlay
+    // 2. Gradient Overlay
+    const rgb = hexToRgb(config.colorOverlay) || { r: 0, g: 0, b: 0 };
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    gradient.addColorStop(0, "rgba(0, 0, 0, 0.2)");
-    gradient.addColorStop(0.4, "rgba(0, 0, 0, 0.6)");
-    gradient.addColorStop(1, "rgba(0, 0, 0, 0.9)");
+    gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`);
+    gradient.addColorStop(0.4, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`);
+    gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.9)`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
@@ -119,14 +144,14 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.fillRect(0, 0, width, HEADER_HEIGHT);
 
     // Header Title
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = config.colorTitle;
     ctx.font = `bold 80px "Noto Sans JP"`;
     ctx.textBaseline = "middle";
     ctx.fillText(config.imageTitle, 50, HEADER_HEIGHT / 2);
     const titleWidth = ctx.measureText(config.imageTitle).width;
 
     // Header Subtitle
-    ctx.fillStyle = "#DDDDDD";
+    ctx.fillStyle = config.colorSubtitle;
     ctx.font = `bold 24px "Noto Sans JP"`;
     ctx.fillText(
       config.imageSubtitle,
@@ -166,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const num = (i + 1).toString().padStart(2, "0") + ".";
 
       // A. Draw Number
-      ctx.fillStyle = "#FFFFFF";
+      ctx.fillStyle = config.colorSongText;
       ctx.font = `bold ${FONT_SIZE_NUM}px "Noto Sans JP"`;
       ctx.textBaseline = "top";
       ctx.fillText(num, TEXT_START_X, currentY);
@@ -190,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
       afterTitleY += LH_TITLE;
 
       // C. Draw Comment
-      ctx.fillStyle = "#CCCCCC";
+      ctx.fillStyle = config.colorComment;
       ctx.font = `normal ${FONT_SIZE_COMMENT}px "Noto Sans JP"`;
 
       const commentStartY = afterTitleY + TITLE_COMMENT_GAP;
@@ -253,6 +278,17 @@ document.addEventListener("DOMContentLoaded", () => {
       yOffset = -(newHeight - h) / 2;
     }
     ctx.drawImage(img, xOffset, yOffset, newWidth, newHeight);
+  }
+
+  function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
   }
 
   // --- UI HELPERS ---
