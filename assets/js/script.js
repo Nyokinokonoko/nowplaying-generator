@@ -277,9 +277,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="song-handle"><i class="bi bi-list"></i></div>
                 <i class="bi bi-x-circle remove-song" title="Remove"></i>
             </div>
-            <input type="text" class="form-control form-control-sm song-title" placeholder="Title" value="${songData.title}">
-            <input type="text" class="form-control form-control-sm song-artist" placeholder="Artist" value="${songData.artist}">
-            <textarea class="form-control form-control-sm song-comment" placeholder="Comment" rows="2">${songData.comment}</textarea>
+            <input type="text" class="form-control form-control-sm song-title" placeholder="Title" value="${escapeHTML(
+              songData.title
+            )}">
+            <input type="text" class="form-control form-control-sm song-artist" placeholder="Artist" value="${escapeHTML(
+              songData.artist
+            )}">
+            <textarea class="form-control form-control-sm song-comment" placeholder="Comment" rows="2">${escapeHTML(
+              songData.comment
+            )}</textarea>
         `;
 
     // Bind Events for this item
