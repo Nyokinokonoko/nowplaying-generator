@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+  issue_comment:
+jobs:
+  pr_agent_job:
+    if: ${{ github.event.sender.type != 'Bot' }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+    name: PR Agent
+    steps:
+      - name: PR Agent action step
+        id: pragent
+        uses: qodo-ai/pr-agent@main
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENAI_API_BASE: "https://openrouter.ai/api/v1"
+      PR_AGENT_MODEL: "${{ secrets.PR_AGENT_MODEL }}"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      config_file: .pr-agent.toml
