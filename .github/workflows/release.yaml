@@ -21,3 +21,20 @@ jobs:
         id: release
         with:
           release-type: node
+
+  deploy:
+    needs: release-please
+    runs-on: ubuntu-latest
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject version
+        run: |
+          sed -i 's/>local-dev</>${{ needs.release-please.outputs.tag_name }}</' index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
