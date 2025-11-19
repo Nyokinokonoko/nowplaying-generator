@@ -17,6 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- UI Elements ---
   const canvas = document.getElementById("previewCanvas");
   const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.width * dpr;
+  canvas.height = canvas.height * dpr;
+  ctx.scale(dpr, dpr);
 
   const titleInput = document.getElementById("imageTitle");
   const subtitleInput = document.getElementById("imageSubtitle");
