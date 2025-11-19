@@ -1,19 +1,5 @@
-const { createCanvas, loadImage, registerFont } = require("canvas");
+const { createCanvas, loadImage } = require("canvas");
 const fs = require("fs");
-
-// --- 1. SETUP FONTS ---
-try {
-  registerFont("src/static/fonts/notoSansJP/NotoSansJP-Bold.ttf", {
-    family: "Noto Sans JP",
-    weight: "bold",
-  });
-  registerFont("src/static/fonts/notoSansJP/NotoSansJP-Regular.ttf", {
-    family: "Noto Sans JP",
-    weight: "normal",
-  });
-} catch (e) {
-  console.warn("Warning: Noto Sans JP fonts not found. Using system default.");
-}
 
 async function generateTracklistImage(config) {
   // Canvas Setup (Full HD)
