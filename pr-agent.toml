@@ -1,0 +1,13 @@
+[pr_description]
+generate_ai_title = true
+final_update_message = true
+
+[pr_reviewer]
+require_estimate_effort_to_review=true
+require_can_be_split_review	= true
+inline_code_comments = true
+
+[pr_code_suggestions]
+rank_suggestions = true
+commitable_code_suggestions = true
+demand_code_suggestions_self_review = true
