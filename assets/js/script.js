@@ -263,6 +263,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function addSongToDOM(songData = { title: "", artist: "", comment: "" }) {
+    const escapeHTML = (str) =>
+      (str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+
     const div = document.createElement("div");
     div.className = "song-item";
     div.innerHTML = `
