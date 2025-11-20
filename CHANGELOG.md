@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0](https://github.com/Nyokinokonoko/nowplaying-generator/compare/v1.1.0...v1.2.0) (2025-11-20)
+
+
+### Features
+
+* Add No-Cover Mode configuration and UI ([02ebe9f](https://github.com/Nyokinokonoko/nowplaying-generator/commit/02ebe9f00e5b84f111cfb55de2fcbb59d527c431))
+* Adds No-Cover Mode and removes canvas generation ([41d1f22](https://github.com/Nyokinokonoko/nowplaying-generator/commit/41d1f22f3073c37369fd9e8adc3ba613e172eb34))
+* Implement No-Cover Mode rendering logic ([096a5fe](https://github.com/Nyokinokonoko/nowplaying-generator/commit/096a5fe99eb11c2fae120e5cc3d2d457511dd680))
+* Make noCoverModeCheckbox interaction more robust ([b783cd8](https://github.com/Nyokinokonoko/nowplaying-generator/commit/b783cd8977f19c3a670efd264ecde2ec748ef3e2))
+* Remove canvas-based image generation ([0a96623](https://github.com/Nyokinokonoko/nowplaying-generator/commit/0a966236d0362b4156ce3a998e3277aeb95cb716))
+
 ## [1.1.0](https://github.com/Nyokinokonoko/nowplaying-generator/compare/v1.0.0...v1.1.0) (2025-11-19)
 
 
