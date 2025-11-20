@@ -356,7 +356,11 @@ document.addEventListener("DOMContentLoaded", () => {
     div.className = "song-item";
     div.innerHTML = `
             <div class="d-flex justify-content-between align-items-start">
-                <div class="song-handle"><i class="bi bi-list"></i></div>
+                <div class="d-flex align-items-center">
+                    <div class="song-handle me-2"><i class="bi bi-list"></i></div>
+                    <span class="song-number fw-bold"></span>
+                    <span class="song-summary ms-2 text-muted small text-truncate" style="max-width: 350px;"></span>
+                </div>
                 <i class="bi bi-x-circle remove-song" title="Remove"></i>
             </div>
             <input type="text" class="form-control form-control-sm song-title" placeholder="Title" value="${escapeHTML(
