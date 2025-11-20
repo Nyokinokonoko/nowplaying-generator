@@ -178,27 +178,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 5. Render Song List
-    let currentY = LIST_START_Y;
-
-    for (let i = 0; i < config.songs.length; i++) {
-      const song = config.songs[i];
-
-      // Check Overflow
-      if (currentY + LH_NUM + LH_TITLE + LH_COMMENT > height - 30) {
-        break;
-      }
-
-      const num = (i + 1).toString().padStart(2, "0") + ".";
+    const drawSongItem = (song, index, x, y, maxWidth) => {
+      const num = (index + 1).toString().padStart(2, "0") + ".";
 
       // A. Draw Number
       ctx.fillStyle = config.colorSongText;
       ctx.font = `bold ${FONT_SIZE_NUM}px "Noto Sans JP"`;
       ctx.textBaseline = "top";
-      ctx.fillText(num, TEXT_START_X, currentY);
+      ctx.fillText(num, x, y);
 
       const numberWidth = 70;
-      const contentX = TEXT_START_X + numberWidth;
-      const contentMaxWidth = TEXT_MAX_WIDTH - numberWidth;
+      const contentX = x + numberWidth;
+      const contentMaxWidth = maxWidth - numberWidth;
 
       // B. Draw Title
       ctx.font = `bold ${FONT_SIZE_TITLE}px "Noto Sans JP"`;
@@ -208,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx,
         titleText,
         contentX,
-        currentY,
+        y,
         contentMaxWidth,
         LH_TITLE
       );
