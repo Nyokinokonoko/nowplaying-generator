@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const noCoverModeCheckbox = document.getElementById("noCoverMode");
   const songListEl = document.getElementById("songList");
   const addSongBtn = document.getElementById("addSongBtn");
+  const toggleCollapseBtn = document.getElementById("toggleCollapseBtn");
   const downloadBtn = document.getElementById("downloadBtn");
 
   const colorInputs = {
@@ -98,6 +99,31 @@ document.addEventListener("DOMContentLoaded", () => {
     addSongBtn.addEventListener("click", () => {
       addSongToDOM();
       updateSongsFromDOM();
+    });
+
+    toggleCollapseBtn.addEventListener("click", () => {
+      const items = songListEl.querySelectorAll(".song-item");
+      let hasExpanded = false;
+      items.forEach((item) => {
+        const inputs = item.querySelector(".song-inputs");
+        if (!inputs.classList.contains("d-none")) {
+          hasExpanded = true;
+        }
+      });
+
+      items.forEach((item) => {
+        const inputs = item.querySelector(".song-inputs");
+        const btn = item.querySelector(".collapse-song");
+        if (hasExpanded) {
+          // Collapse All
+          inputs.classList.add("d-none");
+          btn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+        } else {
+          // Expand All
+          inputs.classList.remove("d-none");
+          btn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+        }
+      });
     });
     downloadBtn.addEventListener("click", downloadImage);
 
