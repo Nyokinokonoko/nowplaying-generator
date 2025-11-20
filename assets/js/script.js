@@ -339,9 +339,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- UI HELPERS ---
 
+  function updateSongNumbers() {
+    const items = songListEl.querySelectorAll(".song-item");
+    items.forEach((item, index) => {
+      const numEl = item.querySelector(".song-number");
+      const summaryEl = item.querySelector(".song-summary");
+      const titleVal = item.querySelector(".song-title").value;
+      const artistVal = item.querySelector(".song-artist").value;
+
+      numEl.textContent = (index + 1).toString() + ":";
+      summaryEl.textContent = `${titleVal} / ${artistVal}`;
+    });
+  }
+
   function renderSongList() {
     songListEl.innerHTML = "";
     config.songs.forEach((song) => addSongToDOM(song));
+    updateSongNumbers();
   }
 
   function addSongToDOM(songData = { title: "", artist: "", comment: "" }) {
@@ -391,6 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateSongsFromDOM() {
+    updateSongNumbers();
     const items = songListEl.querySelectorAll(".song-item");
     const newSongs = [];
     items.forEach((item) => {
