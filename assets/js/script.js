@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const noCoverModeCheckbox = document.getElementById("noCoverMode");
   const songListEl = document.getElementById("songList");
   const addSongBtn = document.getElementById("addSongBtn");
+  const toggleCollapseBtn = document.getElementById("toggleCollapseBtn");
   const downloadBtn = document.getElementById("downloadBtn");
 
   const colorInputs = {
@@ -98,6 +99,31 @@ document.addEventListener("DOMContentLoaded", () => {
     addSongBtn.addEventListener("click", () => {
       addSongToDOM();
       updateSongsFromDOM();
+    });
+
+    toggleCollapseBtn.addEventListener("click", () => {
+      const items = songListEl.querySelectorAll(".song-item");
+      let hasExpanded = false;
+      items.forEach((item) => {
+        const inputs = item.querySelector(".song-inputs");
+        if (!inputs.classList.contains("d-none")) {
+          hasExpanded = true;
+        }
+      });
+
+      items.forEach((item) => {
+        const inputs = item.querySelector(".song-inputs");
+        const btn = item.querySelector(".collapse-song");
+        if (hasExpanded) {
+          // Collapse All
+          inputs.classList.add("d-none");
+          btn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+        } else {
+          // Expand All
+          inputs.classList.remove("d-none");
+          btn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+        }
+      });
     });
     downloadBtn.addEventListener("click", downloadImage);
 
@@ -339,9 +365,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- UI HELPERS ---
 
+  function updateSongNumbers() {
+    const items = songListEl.querySelectorAll(".song-item");
+    items.forEach((item, index) => {
+      const numEl = item.querySelector(".song-number");
+      const summaryEl = item.querySelector(".song-summary");
+      const titleVal = item.querySelector(".song-title").value;
+      const artistVal = item.querySelector(".song-artist").value;
+
+      numEl.textContent = (index + 1).toString() + ":";
+      summaryEl.textContent = `${titleVal} / ${artistVal}`;
+    });
+  }
+
   function renderSongList() {
     songListEl.innerHTML = "";
     config.songs.forEach((song) => addSongToDOM(song));
+    updateSongNumbers();
   }
 
   function addSongToDOM(songData = { title: "", artist: "", comment: "" }) {
@@ -355,20 +395,43 @@ document.addEventListener("DOMContentLoaded", () => {
     const div = document.createElement("div");
     div.className = "song-item";
     div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start">
-                <div class="song-handle"><i class="bi bi-list"></i></div>
-                <i class="bi bi-x-circle remove-song" title="Remove"></i>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center" style="flex: 1; overflow: hidden;">
+                    <div class="song-handle me-2" style="cursor: grab;"><i class="bi bi-list"></i></div>
+                    <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark collapse-song me-2" type="button">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <span class="song-number fw-bold"></span>
+                    <span class="song-summary ms-2 text-muted small text-truncate"></span>
+                </div>
+                <i class="bi bi-x-circle remove-song text-danger" style="cursor: pointer;" title="Remove"></i>
             </div>
-            <input type="text" class="form-control form-control-sm song-title" placeholder="Title" value="${escapeHTML(
-              songData.title
-            )}">
-            <input type="text" class="form-control form-control-sm song-artist" placeholder="Artist" value="${escapeHTML(
-              songData.artist
-            )}">
-            <textarea class="form-control form-control-sm song-comment" placeholder="Comment" rows="2">${escapeHTML(
-              songData.comment
-            )}</textarea>
+            <div class="song-inputs d-flex flex-column gap-2">
+                <input type="text" class="form-control form-control-sm song-title" placeholder="Title" value="${escapeHTML(
+                  songData.title
+                )}">
+                <input type="text" class="form-control form-control-sm song-artist" placeholder="Artist" value="${escapeHTML(
+                  songData.artist
+                )}">
+                <textarea class="form-control form-control-sm song-comment" placeholder="Comment" rows="2">${escapeHTML(
+                  songData.comment
+                )}</textarea>
+            </div>
         `;
+
+    // Bind Collapse Event
+    const collapseBtn = div.querySelector(".collapse-song");
+    const inputsDiv = div.querySelector(".song-inputs");
+    collapseBtn.addEventListener("click", () => {
+      const isHidden = inputsDiv.classList.contains("d-none");
+      if (isHidden) {
+        inputsDiv.classList.remove("d-none");
+        collapseBtn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+      } else {
+        inputsDiv.classList.add("d-none");
+        collapseBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+      }
+    });
 
     // Bind Events for this item
     const inputs = div.querySelectorAll("input, textarea");
@@ -387,6 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateSongsFromDOM() {
+    updateSongNumbers();
     const items = songListEl.querySelectorAll(".song-item");
     const newSongs = [];
     items.forEach((item) => {
