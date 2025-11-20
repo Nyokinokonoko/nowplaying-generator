@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0](https://github.com/Nyokinokonoko/nowplaying-generator/compare/v1.2.0...v1.3.0) (2025-11-20)
+
+
+### Features
+
+* Add "Collapse/Expand All" button to song list header ([ac96184](https://github.com/Nyokinokonoko/nowplaying-generator/commit/ac96184db42251f5dd1227d7fc9968c2261bdffe))
+* Implement "Collapse/Expand All" functionality ([a88042c](https://github.com/Nyokinokonoko/nowplaying-generator/commit/a88042cb65ef6adf5dfadea6b7b866c06a0fbb1d))
+* **song-item:** Implement collapse/expand functionality for song details ([17e6e52](https://github.com/Nyokinokonoko/nowplaying-generator/commit/17e6e5258e9a6803f315fcdae89c29270d868847))
+* **songs:** Add song number and summary display elements ([2fae231](https://github.com/Nyokinokonoko/nowplaying-generator/commit/2fae231a53b54e885bc0dddaebef74575ba7c1f9))
+* **songs:** Implement dynamic song numbering and summary logic ([fb172f2](https://github.com/Nyokinokonoko/nowplaying-generator/commit/fb172f242068a160aa2beabba5fd10184ff1eff3))
+
 ## [1.2.0](https://github.com/Nyokinokonoko/nowplaying-generator/compare/v1.1.0...v1.2.0) (2025-11-20)
 
 
