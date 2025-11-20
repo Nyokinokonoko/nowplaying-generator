@@ -78,10 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
       config.imageSubtitle = e.target.value;
       drawCanvas();
     });
-    noCoverModeCheckbox.addEventListener("change", (e) => {
-      config.noCoverMode = e.target.checked;
-      drawCanvas();
-    });
+
+    if (noCoverModeCheckbox) {
+      config.noCoverMode = !!noCoverModeCheckbox.checked;
+      noCoverModeCheckbox.addEventListener("change", (e) => {
+        config.noCoverMode = e.target.checked;
+        drawCanvas();
+      });
+    }
 
     // Color Inputs
     Object.keys(colorInputs).forEach((key) => {
