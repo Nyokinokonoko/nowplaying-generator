@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         comment: "Comment text here (optional)",
       },
     ],
+    noCoverMode: false,
   };
 
   // --- UI Elements ---
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const titleInput = document.getElementById("imageTitle");
   const subtitleInput = document.getElementById("imageSubtitle");
+  const noCoverModeCheckbox = document.getElementById("noCoverMode");
   const songListEl = document.getElementById("songList");
   const addSongBtn = document.getElementById("addSongBtn");
   const downloadBtn = document.getElementById("downloadBtn");
