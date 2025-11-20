@@ -78,6 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
       config.imageSubtitle = e.target.value;
       drawCanvas();
     });
+    noCoverModeCheckbox.addEventListener("change", (e) => {
+      config.noCoverMode = e.target.checked;
+      drawCanvas();
+    });
 
     // Color Inputs
     Object.keys(colorInputs).forEach((key) => {
@@ -162,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     // 4. Cover Art
-    if (config.coverArt) {
+    if (!config.noCoverMode && config.coverArt) {
       const coverSize = 700;
       const coverX = 50;
       const coverY = (height - coverSize) / 2 + 50;
@@ -228,7 +232,49 @@ document.addEventListener("DOMContentLoaded", () => {
         afterCommentY = commentStartY + MIN_COMMENT_HEIGHT;
       }
 
-      currentY = afterCommentY + ITEM_SPACING;
+      return afterCommentY + ITEM_SPACING;
+    };
+
+    if (config.noCoverMode) {
+      // No-Cover Mode: Two Columns
+      // Layout: 50px margin, 60px gap, 50px margin
+      const sideMargin = 50;
+      const colGap = 60;
+      const colWidth = (width - sideMargin * 2 - colGap) / 2; // (1920 - 160)/2 = 880
+      const col1X = sideMargin;
+      const col2X = sideMargin + colWidth + colGap;
+
+      const splitIndex = Math.ceil(config.songs.length / 2);
+
+      // Left Column
+      let currentY = LIST_START_Y;
+      for (let i = 0; i < splitIndex; i++) {
+        if (currentY > height - 30) break;
+        currentY = drawSongItem(config.songs[i], i, col1X, currentY, colWidth);
+      }
+
+      // Right Column
+      currentY = LIST_START_Y;
+      for (let i = splitIndex; i < config.songs.length; i++) {
+        if (currentY > height - 30) break;
+        currentY = drawSongItem(config.songs[i], i, col2X, currentY, colWidth);
+      }
+    } else {
+      // Default Mode: Single Column with Cover
+      let currentY = LIST_START_Y;
+      for (let i = 0; i < config.songs.length; i++) {
+        // Check Overflow
+        if (currentY + LH_NUM + LH_TITLE + LH_COMMENT > height - 30) {
+          break;
+        }
+        currentY = drawSongItem(
+          config.songs[i],
+          i,
+          TEXT_START_X,
+          currentY,
+          TEXT_MAX_WIDTH
+        );
+      }
     }
   }
 
