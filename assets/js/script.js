@@ -197,9 +197,9 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.textBaseline = "top";
       ctx.fillText(num, x, y);
 
-      const numberWidth = 70;
+      const numberWidth = Math.ceil(ctx.measureText(num).width) + 10;
       const contentX = x + numberWidth;
-      const contentMaxWidth = maxWidth - numberWidth;
+      const contentMaxWidth = Math.max(0, maxWidth - numberWidth);
 
       // B. Draw Title
       ctx.font = `bold ${FONT_SIZE_TITLE}px "Noto Sans JP"`;
