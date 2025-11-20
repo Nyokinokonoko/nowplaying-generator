@@ -250,17 +250,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const splitIndex = Math.ceil(config.songs.length / 2);
 
+      const canRenderMore = (y) =>
+        y + LH_NUM + LH_TITLE + LH_COMMENT <= height - 30;
+
       // Left Column
       let currentY = LIST_START_Y;
       for (let i = 0; i < splitIndex; i++) {
-        if (currentY > height - 30) break;
+        if (!canRenderMore(currentY)) break;
         currentY = drawSongItem(config.songs[i], i, col1X, currentY, colWidth);
       }
 
       // Right Column
       currentY = LIST_START_Y;
       for (let i = splitIndex; i < config.songs.length; i++) {
-        if (currentY > height - 30) break;
+        if (!canRenderMore(currentY)) break;
         currentY = drawSongItem(config.songs[i], i, col2X, currentY, colWidth);
       }
     } else {
