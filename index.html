@@ -16,7 +16,7 @@
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">NowPlaying Generator</span>
             <div class="d-flex align-items-center">
-                <span class="navbar-text me-3">v1.2.0</span>
+                <span class="navbar-text me-3">v1.3.0</span>
                 <a href="https://github.com/Nyokinokonoko/nowplaying-generator" target="_blank" class="text-white" title="View on GitHub">
                     <i class="bi bi-github fs-4"></i>
                 </a>
@@ -103,9 +103,14 @@
                         <!-- Song List -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="mb-0">Song List</h6>
-                            <button class="btn btn-sm btn-primary" id="addSongBtn">
-                                <i class="bi bi-plus-lg"></i> Add Song
-                            </button>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary me-1" id="toggleCollapseBtn" title="Collapse/Expand All">
+                                    <i class="bi bi-arrows-expand"></i>
+                                </button>
+                                <button class="btn btn-sm btn-primary" id="addSongBtn">
+                                    <i class="bi bi-plus-lg"></i> Add Song
+                                </button>
+                            </div>
                         </div>
 
                         <div id="songList" class="list-group mb-3">
