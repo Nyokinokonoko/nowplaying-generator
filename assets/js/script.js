@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const LH_NUM = 48;
     const LH_TITLE = 50;
     const LH_COMMENT = 26;
-    const ACCENT = "#8577ff";
+    const ACCENT = "#4fa2ff";
 
     // 1. Draw Backdrop
     if (config.backdrop) {

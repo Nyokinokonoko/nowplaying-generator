@@ -18,11 +18,11 @@
   --text-faint: #6b6b76;
 
   /* Accent */
-  --accent: #6d5efc;
-  --accent-hover: #8577ff;
-  --accent-soft: rgba(109, 94, 252, 0.16);
-  --accent-glow: rgba(109, 94, 252, 0.35);
-  --accent-ring: rgba(109, 94, 252, 0.28);
+  --accent: #2f8fff;
+  --accent-hover: #4fa2ff;
+  --accent-soft: rgba(47, 143, 255, 0.16);
+  --accent-glow: rgba(47, 143, 255, 0.35);
+  --accent-ring: rgba(47, 143, 255, 0.28);
 
   /* Semantic */
   --success: #2fd07a;
@@ -56,7 +56,7 @@ body {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(1100px 600px at 15% -8%, rgba(109, 94, 252, 0.14), transparent 60%),
+    radial-gradient(1100px 600px at 15% -8%, rgba(47, 143, 255, 0.14), transparent 60%),
     radial-gradient(900px 620px at 100% 0%, rgba(47, 208, 122, 0.07), transparent 55%),
     var(--bg);
   background-attachment: fixed;
@@ -106,7 +106,7 @@ body {
   width: 30px;
   height: 30px;
   border-radius: 9px;
-  background: linear-gradient(135deg, var(--accent), #b06dff);
+  background: linear-gradient(135deg, var(--accent), #38d6ff);
   box-shadow: 0 4px 16px -4px var(--accent-glow);
   color: #fff;
 }
