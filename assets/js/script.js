@@ -157,6 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const LH_NUM = 48;
     const LH_TITLE = 50;
     const LH_COMMENT = 26;
+    const ACCENT = "#8577ff";
 
     // 1. Draw Backdrop
     if (config.backdrop) {
@@ -169,22 +170,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Gradient Overlay
     const rgb = hexToRgb(config.colorOverlay) || { r: 0, g: 0, b: 0 };
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`);
-    gradient.addColorStop(0.4, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`);
-    gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.9)`);
+    gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
+    gradient.addColorStop(0.35, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.45)`);
+    gradient.addColorStop(0.7, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.72)`);
+    gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.92)`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // 3. Header Bar
-    ctx.fillStyle = "black";
+    // 3. Header Bar (translucent dark with accent tick + underline)
+    ctx.fillStyle = "rgba(10, 10, 14, 0.82)";
     ctx.fillRect(0, 0, width, HEADER_HEIGHT);
+    ctx.fillStyle = ACCENT;
+    ctx.fillRect(0, 0, 8, HEADER_HEIGHT); // left accent tick
+    ctx.fillRect(0, HEADER_HEIGHT - 3, width, 3); // accent underline
+
+    const supportsLetterSpacing = "letterSpacing" in ctx;
 
     // Header Title
     ctx.fillStyle = config.colorTitle;
     ctx.font = `bold 80px "Noto Sans JP"`;
     ctx.textBaseline = "middle";
+    if (supportsLetterSpacing) ctx.letterSpacing = "2px";
     ctx.fillText(config.imageTitle, 50, HEADER_HEIGHT / 2);
     const titleWidth = ctx.measureText(config.imageTitle).width;
+    if (supportsLetterSpacing) ctx.letterSpacing = "0px";
 
     // Header Subtitle
     ctx.fillStyle = config.colorSubtitle;
@@ -195,30 +204,46 @@ document.addEventListener("DOMContentLoaded", () => {
       HEADER_HEIGHT / 2 + 5
     );
 
-    // 4. Cover Art
+    // 4. Cover Art (rounded corners + soft shadow + faint border)
     if (!config.noCoverMode && config.coverArt) {
       const coverSize = 700;
       const coverX = 50;
       const coverY = (height - coverSize) / 2 + 50;
+      const coverRadius = 24;
 
+      // Cast the drop shadow from a filled rounded-rect
+      ctx.save();
       ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
       ctx.shadowBlur = 40;
       ctx.shadowOffsetX = 10;
       ctx.shadowOffsetY = 10;
+      roundRectPath(ctx, coverX, coverY, coverSize, coverSize, coverRadius);
+      ctx.fillStyle = "#000";
+      ctx.fill();
+      ctx.restore();
 
+      // Clip to the rounded rect and draw the image
+      ctx.save();
+      roundRectPath(ctx, coverX, coverY, coverSize, coverSize, coverRadius);
+      ctx.clip();
       ctx.drawImage(config.coverArt, coverX, coverY, coverSize, coverSize);
+      ctx.restore();
 
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
+      // Faint border
+      ctx.save();
+      roundRectPath(ctx, coverX, coverY, coverSize, coverSize, coverRadius);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+      ctx.stroke();
+      ctx.restore();
     }
 
     // 5. Render Song List
     const drawSongItem = (song, index, x, y, maxWidth) => {
       const num = (index + 1).toString().padStart(2, "0") + ".";
 
-      // A. Draw Number
-      ctx.fillStyle = config.colorSongText;
+      // A. Draw Number (accent-colored for hierarchy)
+      ctx.fillStyle = ACCENT;
       ctx.font = `bold ${FONT_SIZE_NUM}px "Noto Sans JP"`;
       ctx.textBaseline = "top";
       ctx.fillText(num, x, y);
@@ -331,6 +356,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     ctx.fillText(line, x, currentY);
     return currentY;
+  }
+
+  function roundRectPath(ctx, x, y, w, h, r) {
+    const radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    if (typeof ctx.roundRect === "function") {
+      ctx.roundRect(x, y, w, h, radius);
+      return;
+    }
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radius);
+    ctx.arcTo(x + w, y + h, x, y + h, radius);
+    ctx.arcTo(x, y + h, x, y, radius);
+    ctx.arcTo(x, y, x + w, y, radius);
+    ctx.closePath();
   }
 
   function drawImageCover(ctx, img, w, h) {
