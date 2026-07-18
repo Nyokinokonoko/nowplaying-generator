@@ -5,12 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     imageSubtitle: "Subtitle text here",
     coverArt: null,
     backdrop: null,
-    colorBackground: "#1a1a1a",
-    colorOverlay: "#000000",
+    colorBackground: "#0d0e12",
+    colorOverlay: "#05060a",
     colorTitle: "#FFFFFF",
-    colorSubtitle: "#DDDDDD",
-    colorSongText: "#FFFFFF",
-    colorComment: "#CCCCCC",
+    colorSubtitle: "#B9B9C6",
+    colorSongText: "#F4F4F6",
+    colorComment: "#9A9AA6",
     songs: [
       {
         title: "Song Title",
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let hasExpanded = false;
       items.forEach((item) => {
         const inputs = item.querySelector(".song-inputs");
-        if (!inputs.classList.contains("d-none")) {
+        if (!inputs.classList.contains("hidden")) {
           hasExpanded = true;
         }
       });
@@ -116,12 +116,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const btn = item.querySelector(".collapse-song");
         if (hasExpanded) {
           // Collapse All
-          inputs.classList.add("d-none");
-          btn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+          inputs.classList.add("hidden");
+          btn.classList.add("is-collapsed");
         } else {
           // Expand All
-          inputs.classList.remove("d-none");
-          btn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+          inputs.classList.remove("hidden");
+          btn.classList.remove("is-collapsed");
         }
       });
     });
@@ -392,28 +392,30 @@ document.addEventListener("DOMContentLoaded", () => {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
 
+    const dragIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="16" x2="20" y2="16"/></svg>`;
+    const chevronIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+    const removeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+
     const div = document.createElement("div");
     div.className = "song-item";
     div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center" style="flex: 1; overflow: hidden;">
-                    <div class="song-handle me-2" style="cursor: grab;"><i class="bi bi-list"></i></div>
-                    <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark collapse-song me-2" type="button">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <span class="song-number fw-bold"></span>
-                    <span class="song-summary ms-2 text-muted small text-truncate"></span>
+            <div class="song-row">
+                <div class="song-row-main">
+                    <div class="song-handle" title="Drag to reorder">${dragIcon}</div>
+                    <button class="collapse-song" type="button" title="Collapse/Expand">${chevronIcon}</button>
+                    <span class="song-number"></span>
+                    <span class="song-summary"></span>
                 </div>
-                <i class="bi bi-x-circle remove-song text-danger" style="cursor: pointer;" title="Remove"></i>
+                <div class="remove-song" title="Remove">${removeIcon}</div>
             </div>
-            <div class="song-inputs d-flex flex-column gap-2">
-                <input type="text" class="form-control form-control-sm song-title" placeholder="Title" value="${escapeHTML(
+            <div class="song-inputs">
+                <input type="text" class="input input-sm song-title" placeholder="Title" value="${escapeHTML(
                   songData.title
                 )}">
-                <input type="text" class="form-control form-control-sm song-artist" placeholder="Artist" value="${escapeHTML(
+                <input type="text" class="input input-sm song-artist" placeholder="Artist" value="${escapeHTML(
                   songData.artist
                 )}">
-                <textarea class="form-control form-control-sm song-comment" placeholder="Comment" rows="2">${escapeHTML(
+                <textarea class="textarea input-sm song-comment" placeholder="Comment" rows="2">${escapeHTML(
                   songData.comment
                 )}</textarea>
             </div>
@@ -423,13 +425,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const collapseBtn = div.querySelector(".collapse-song");
     const inputsDiv = div.querySelector(".song-inputs");
     collapseBtn.addEventListener("click", () => {
-      const isHidden = inputsDiv.classList.contains("d-none");
+      const isHidden = inputsDiv.classList.contains("hidden");
       if (isHidden) {
-        inputsDiv.classList.remove("d-none");
-        collapseBtn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+        inputsDiv.classList.remove("hidden");
+        collapseBtn.classList.remove("is-collapsed");
       } else {
-        inputsDiv.classList.add("d-none");
-        collapseBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+        inputsDiv.classList.add("hidden");
+        collapseBtn.classList.add("is-collapsed");
       }
     });
 
