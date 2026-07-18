@@ -5,12 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     imageSubtitle: "Subtitle text here",
     coverArt: null,
     backdrop: null,
-    colorBackground: "#1a1a1a",
-    colorOverlay: "#000000",
+    colorBackground: "#0d0e12",
+    colorOverlay: "#05060a",
     colorTitle: "#FFFFFF",
-    colorSubtitle: "#DDDDDD",
-    colorSongText: "#FFFFFF",
-    colorComment: "#CCCCCC",
+    colorSubtitle: "#B9B9C6",
+    colorSongText: "#F4F4F6",
+    colorComment: "#9A9AA6",
     songs: [
       {
         title: "Song Title",
@@ -20,6 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ],
     noCoverMode: false,
   };
+
+  // Canvas font stack: Inter for clean Latin, Noto Sans JP for CJK glyphs.
+  const CANVAS_FONT = `"Inter", "Noto Sans JP", sans-serif`;
 
   // --- UI Elements ---
   const canvas = document.getElementById("previewCanvas");
@@ -106,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let hasExpanded = false;
       items.forEach((item) => {
         const inputs = item.querySelector(".song-inputs");
-        if (!inputs.classList.contains("d-none")) {
+        if (!inputs.classList.contains("hidden")) {
           hasExpanded = true;
         }
       });
@@ -116,12 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const btn = item.querySelector(".collapse-song");
         if (hasExpanded) {
           // Collapse All
-          inputs.classList.add("d-none");
-          btn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+          inputs.classList.add("hidden");
+          btn.classList.add("is-collapsed");
         } else {
           // Expand All
-          inputs.classList.remove("d-none");
-          btn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+          inputs.classList.remove("hidden");
+          btn.classList.remove("is-collapsed");
         }
       });
     });
@@ -129,10 +132,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initial Render
     renderSongList();
-    // Wait for fonts to load
-    document.fonts.ready.then(() => {
-      drawCanvas();
-    });
+    // Explicitly load the canvas fonts (Noto Sans JP isn't used in the DOM,
+    // so it won't download on its own) and redraw once they're ready.
+    const fontsToLoad = [
+      `bold 80px "Inter"`,
+      `normal 18px "Inter"`,
+      `bold 80px "Noto Sans JP"`,
+      `normal 18px "Noto Sans JP"`,
+    ];
+    Promise.all(
+      fontsToLoad.map((f) => document.fonts.load(f).catch(() => {}))
+    ).then(() => drawCanvas());
+    document.fonts.ready.then(() => drawCanvas());
   }
 
   // --- CANVAS LOGIC (Ported from canvasGenerator.js) ---
@@ -157,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const LH_NUM = 48;
     const LH_TITLE = 50;
     const LH_COMMENT = 26;
+    const ACCENT = "#4fa2ff";
 
     // 1. Draw Backdrop
     if (config.backdrop) {
@@ -169,57 +181,81 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Gradient Overlay
     const rgb = hexToRgb(config.colorOverlay) || { r: 0, g: 0, b: 0 };
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`);
-    gradient.addColorStop(0.4, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`);
-    gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.9)`);
+    gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
+    gradient.addColorStop(0.35, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.45)`);
+    gradient.addColorStop(0.7, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.72)`);
+    gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.92)`);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // 3. Header Bar
-    ctx.fillStyle = "black";
+    // 3. Header Bar (translucent dark with accent tick + underline)
+    ctx.fillStyle = "rgba(10, 10, 14, 0.82)";
     ctx.fillRect(0, 0, width, HEADER_HEIGHT);
+    ctx.fillStyle = ACCENT;
+    ctx.fillRect(0, 0, 8, HEADER_HEIGHT); // left accent tick
+    ctx.fillRect(0, HEADER_HEIGHT - 3, width, 3); // accent underline
+
+    const supportsLetterSpacing = "letterSpacing" in ctx;
 
     // Header Title
     ctx.fillStyle = config.colorTitle;
-    ctx.font = `bold 80px "Noto Sans JP"`;
+    ctx.font = `bold 80px ${CANVAS_FONT}`;
     ctx.textBaseline = "middle";
+    if (supportsLetterSpacing) ctx.letterSpacing = "2px";
     ctx.fillText(config.imageTitle, 50, HEADER_HEIGHT / 2);
     const titleWidth = ctx.measureText(config.imageTitle).width;
+    if (supportsLetterSpacing) ctx.letterSpacing = "0px";
 
     // Header Subtitle
     ctx.fillStyle = config.colorSubtitle;
-    ctx.font = `bold 24px "Noto Sans JP"`;
+    ctx.font = `bold 24px ${CANVAS_FONT}`;
     ctx.fillText(
       config.imageSubtitle,
       50 + titleWidth + 30,
       HEADER_HEIGHT / 2 + 5
     );
 
-    // 4. Cover Art
+    // 4. Cover Art (rounded corners + soft shadow + faint border)
     if (!config.noCoverMode && config.coverArt) {
       const coverSize = 700;
       const coverX = 50;
       const coverY = (height - coverSize) / 2 + 50;
+      const coverRadius = 24;
 
+      // Cast the drop shadow from a filled rounded-rect
+      ctx.save();
       ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
       ctx.shadowBlur = 40;
       ctx.shadowOffsetX = 10;
       ctx.shadowOffsetY = 10;
+      roundRectPath(ctx, coverX, coverY, coverSize, coverSize, coverRadius);
+      ctx.fillStyle = "#000";
+      ctx.fill();
+      ctx.restore();
 
+      // Clip to the rounded rect and draw the image
+      ctx.save();
+      roundRectPath(ctx, coverX, coverY, coverSize, coverSize, coverRadius);
+      ctx.clip();
       ctx.drawImage(config.coverArt, coverX, coverY, coverSize, coverSize);
+      ctx.restore();
 
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
+      // Faint border
+      ctx.save();
+      roundRectPath(ctx, coverX, coverY, coverSize, coverSize, coverRadius);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+      ctx.stroke();
+      ctx.restore();
     }
 
     // 5. Render Song List
     const drawSongItem = (song, index, x, y, maxWidth) => {
       const num = (index + 1).toString().padStart(2, "0") + ".";
 
-      // A. Draw Number
-      ctx.fillStyle = config.colorSongText;
-      ctx.font = `bold ${FONT_SIZE_NUM}px "Noto Sans JP"`;
+      // A. Draw Number (accent-colored for hierarchy)
+      ctx.fillStyle = ACCENT;
+      ctx.font = `bold ${FONT_SIZE_NUM}px ${CANVAS_FONT}`;
       ctx.textBaseline = "top";
       ctx.fillText(num, x, y);
 
@@ -228,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const contentMaxWidth = Math.max(0, maxWidth - numberWidth);
 
       // B. Draw Title
-      ctx.font = `bold ${FONT_SIZE_TITLE}px "Noto Sans JP"`;
+      ctx.font = `bold ${FONT_SIZE_TITLE}px ${CANVAS_FONT}`;
       const titleText = `${song.title} / ${song.artist}`;
 
       let afterTitleY = wrapText(
@@ -243,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // C. Draw Comment
       ctx.fillStyle = config.colorComment;
-      ctx.font = `normal ${FONT_SIZE_COMMENT}px "Noto Sans JP"`;
+      ctx.font = `normal ${FONT_SIZE_COMMENT}px ${CANVAS_FONT}`;
 
       const commentStartY = afterTitleY + TITLE_COMMENT_GAP;
       let afterCommentY = commentStartY;
@@ -333,6 +369,21 @@ document.addEventListener("DOMContentLoaded", () => {
     return currentY;
   }
 
+  function roundRectPath(ctx, x, y, w, h, r) {
+    const radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    if (typeof ctx.roundRect === "function") {
+      ctx.roundRect(x, y, w, h, radius);
+      return;
+    }
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radius);
+    ctx.arcTo(x + w, y + h, x, y + h, radius);
+    ctx.arcTo(x, y + h, x, y, radius);
+    ctx.arcTo(x, y, x + w, y, radius);
+    ctx.closePath();
+  }
+
   function drawImageCover(ctx, img, w, h) {
     const imgRatio = img.width / img.height;
     const winRatio = w / h;
@@ -392,28 +443,30 @@ document.addEventListener("DOMContentLoaded", () => {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
 
+    const dragIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="16" x2="20" y2="16"/></svg>`;
+    const chevronIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+    const removeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+
     const div = document.createElement("div");
     div.className = "song-item";
     div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center" style="flex: 1; overflow: hidden;">
-                    <div class="song-handle me-2" style="cursor: grab;"><i class="bi bi-list"></i></div>
-                    <button class="btn btn-sm btn-link p-0 text-decoration-none text-dark collapse-song me-2" type="button">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <span class="song-number fw-bold"></span>
-                    <span class="song-summary ms-2 text-muted small text-truncate"></span>
+            <div class="song-row">
+                <div class="song-row-main">
+                    <div class="song-handle" title="Drag to reorder">${dragIcon}</div>
+                    <button class="collapse-song" type="button" title="Collapse/Expand">${chevronIcon}</button>
+                    <span class="song-number"></span>
+                    <span class="song-summary"></span>
                 </div>
-                <i class="bi bi-x-circle remove-song text-danger" style="cursor: pointer;" title="Remove"></i>
+                <div class="remove-song" title="Remove">${removeIcon}</div>
             </div>
-            <div class="song-inputs d-flex flex-column gap-2">
-                <input type="text" class="form-control form-control-sm song-title" placeholder="Title" value="${escapeHTML(
+            <div class="song-inputs">
+                <input type="text" class="input input-sm song-title" placeholder="Title" value="${escapeHTML(
                   songData.title
                 )}">
-                <input type="text" class="form-control form-control-sm song-artist" placeholder="Artist" value="${escapeHTML(
+                <input type="text" class="input input-sm song-artist" placeholder="Artist" value="${escapeHTML(
                   songData.artist
                 )}">
-                <textarea class="form-control form-control-sm song-comment" placeholder="Comment" rows="2">${escapeHTML(
+                <textarea class="textarea input-sm song-comment" placeholder="Comment" rows="2">${escapeHTML(
                   songData.comment
                 )}</textarea>
             </div>
@@ -423,13 +476,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const collapseBtn = div.querySelector(".collapse-song");
     const inputsDiv = div.querySelector(".song-inputs");
     collapseBtn.addEventListener("click", () => {
-      const isHidden = inputsDiv.classList.contains("d-none");
+      const isHidden = inputsDiv.classList.contains("hidden");
       if (isHidden) {
-        inputsDiv.classList.remove("d-none");
-        collapseBtn.innerHTML = '<i class="bi bi-chevron-down"></i>';
+        inputsDiv.classList.remove("hidden");
+        collapseBtn.classList.remove("is-collapsed");
       } else {
-        inputsDiv.classList.add("d-none");
-        collapseBtn.innerHTML = '<i class="bi bi-chevron-right"></i>';
+        inputsDiv.classList.add("hidden");
+        collapseBtn.classList.add("is-collapsed");
       }
     });
 
