@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/Nyokinokonoko/nowplaying-generator/compare/v1.3.0...v1.4.0) (2026-07-18)
+
+
+### Features
+
+* modernize the generated canvas image ([252d84e](https://github.com/Nyokinokonoko/nowplaying-generator/commit/252d84ed8ddd3cbb3083e3938e8202e33aeb41f5))
+* rebuild song-list rows with custom markup and inline icons ([80e54a0](https://github.com/Nyokinokonoko/nowplaying-generator/commit/80e54a0c3b707d07f7c07df7afbfb0c9df0ec3ab))
+
+
+### Bug Fixes
+
+* render canvas text in sans-serif instead of serif fallback ([edec8a5](https://github.com/Nyokinokonoko/nowplaying-generator/commit/edec8a5184e186f8742ce3edd3f2742ea99c1b15))
+
 ## [1.3.0](https://github.com/Nyokinokonoko/nowplaying-generator/compare/v1.2.0...v1.3.0) (2025-11-20)
 
 
