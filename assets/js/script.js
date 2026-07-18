@@ -21,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
     noCoverMode: false,
   };
 
+  // Canvas font stack: Inter for clean Latin, Noto Sans JP for CJK glyphs.
+  const CANVAS_FONT = `"Inter", "Noto Sans JP", sans-serif`;
+
   // --- UI Elements ---
   const canvas = document.getElementById("previewCanvas");
   const ctx = canvas.getContext("2d");
@@ -129,10 +132,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initial Render
     renderSongList();
-    // Wait for fonts to load
-    document.fonts.ready.then(() => {
-      drawCanvas();
-    });
+    // Explicitly load the canvas fonts (Noto Sans JP isn't used in the DOM,
+    // so it won't download on its own) and redraw once they're ready.
+    const fontsToLoad = [
+      `bold 80px "Inter"`,
+      `normal 18px "Inter"`,
+      `bold 80px "Noto Sans JP"`,
+      `normal 18px "Noto Sans JP"`,
+    ];
+    Promise.all(
+      fontsToLoad.map((f) => document.fonts.load(f).catch(() => {}))
+    ).then(() => drawCanvas());
+    document.fonts.ready.then(() => drawCanvas());
   }
 
   // --- CANVAS LOGIC (Ported from canvasGenerator.js) ---
@@ -188,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Header Title
     ctx.fillStyle = config.colorTitle;
-    ctx.font = `bold 80px "Noto Sans JP"`;
+    ctx.font = `bold 80px ${CANVAS_FONT}`;
     ctx.textBaseline = "middle";
     if (supportsLetterSpacing) ctx.letterSpacing = "2px";
     ctx.fillText(config.imageTitle, 50, HEADER_HEIGHT / 2);
@@ -197,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Header Subtitle
     ctx.fillStyle = config.colorSubtitle;
-    ctx.font = `bold 24px "Noto Sans JP"`;
+    ctx.font = `bold 24px ${CANVAS_FONT}`;
     ctx.fillText(
       config.imageSubtitle,
       50 + titleWidth + 30,
@@ -244,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // A. Draw Number (accent-colored for hierarchy)
       ctx.fillStyle = ACCENT;
-      ctx.font = `bold ${FONT_SIZE_NUM}px "Noto Sans JP"`;
+      ctx.font = `bold ${FONT_SIZE_NUM}px ${CANVAS_FONT}`;
       ctx.textBaseline = "top";
       ctx.fillText(num, x, y);
 
@@ -253,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const contentMaxWidth = Math.max(0, maxWidth - numberWidth);
 
       // B. Draw Title
-      ctx.font = `bold ${FONT_SIZE_TITLE}px "Noto Sans JP"`;
+      ctx.font = `bold ${FONT_SIZE_TITLE}px ${CANVAS_FONT}`;
       const titleText = `${song.title} / ${song.artist}`;
 
       let afterTitleY = wrapText(
@@ -268,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // C. Draw Comment
       ctx.fillStyle = config.colorComment;
-      ctx.font = `normal ${FONT_SIZE_COMMENT}px "Noto Sans JP"`;
+      ctx.font = `normal ${FONT_SIZE_COMMENT}px ${CANVAS_FONT}`;
 
       const commentStartY = afterTitleY + TITLE_COMMENT_GAP;
       let afterCommentY = commentStartY;
